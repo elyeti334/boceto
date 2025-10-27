@@ -4,48 +4,98 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FamHogar - Boceto App</title>
+
+<!-- Iconos -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
+    :root {
+        --azul: #004a87;
+        --verde: #2ecc71;
+        --gris: #ececec;
+    }
+
     body {
         font-family: Arial, sans-serif;
         margin: 0;
-        background: #f4f4f4;
+        background: var(--gris);
         text-align: center;
     }
+
+    header img {
+        width: 120px;
+        margin-top: 20px;
+    }
+
     .pantalla {
         display: none;
-        padding: 40px 20px;
+        padding: 30px 20px;
+        animation: fade .4s ease;
     }
     .activa {
         display: block;
     }
-    h1 {
-        color: #0078ff;
+
+    @keyframes fade {
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
+
+    h1 {
+        color: var(--azul);
+    }
+
     button {
-        padding: 12px 20px;
-        background: #0078ff;
+        padding: 14px 20px;
+        background: var(--azul);
         color: white;
         border: none;
-        border-radius: 6px;
+        border-radius: 10px;
         margin: 10px;
         cursor: pointer;
-        font-size: 16px;
+        font-size: 17px;
+        width: 80%;
+        max-width: 300px;
+        transition: 0.2s ease;
     }
+
+    button:active {
+        transform: scale(0.96);
+        background: #00345f;
+    }
+
     input {
         width: 80%;
-        padding: 12px;
-        border-radius: 6px;
-        border: 1px solid #aaa;
-        margin: 10px 0;
+        padding: 14px;
+        border-radius: 8px;
+        border: 2px solid #ccc;
+        margin: 8px 0;
         font-size: 16px;
+        outline: none;
     }
+
+    input:focus {
+        border-color: var(--azul);
+    }
+
     .tarjeta {
         background: white;
         padding: 20px;
         margin: 20px auto;
         width: 85%;
         border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+        text-align: left;
+    }
+
+    .btn-alerta {
+        background: var(--verde);
+        font-size: 18px;
+    }
+
+    .footer-btn {
+        margin-top: 20px;
+        background: #bbb;
     }
 </style>
 </head>
@@ -54,19 +104,22 @@
 
 <!-- 📌 Pantalla Inicio -->
 <section id="inicio" class="pantalla activa">
+    <header>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Blue_home_icon.svg/1024px-Blue_home_icon.svg.png" alt="Logo">
+    </header>
     <h1>FamHogar</h1>
-    <p>Seguridad familiar y monitoreo al alcance de todos</p>
-    <button onclick="mostrar('login')">Iniciar sesión</button><br>
-    <button onclick="mostrar('registro')">Crear cuenta</button>
+    <p>Protegemos lo que más importa</p>
+    <button onclick="mostrar('login')"><i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión</button><br>
+    <button onclick="mostrar('registro')"><i class="fa-solid fa-user-plus"></i> Crear Cuenta</button>
 </section>
 
 <!-- 📌 Pantalla Login -->
 <section id="login" class="pantalla">
-    <h1>Iniciar Sesión</h1>
+    <h1>Acceso</h1>
     <input type="email" placeholder="Correo electrónico"><br>
     <input type="password" placeholder="Contraseña"><br>
     <button onclick="mostrar('dashboard')">Ingresar</button><br>
-    <button onclick="mostrar('inicio')">← Volver</button>
+    <button class="footer-btn" onclick="mostrar('inicio')">← Volver</button>
 </section>
 
 <!-- 📌 Pantalla Registro -->
@@ -75,8 +128,8 @@
     <input type="text" placeholder="Nombre completo"><br>
     <input type="email" placeholder="Correo electrónico"><br>
     <input type="password" placeholder="Crear contraseña"><br>
-    <button onclick="mostrar('dashboard')">Registrarme</button><br>
-    <button onclick="mostrar('inicio')">← Volver</button>
+    <button onclick="mostrar('dashboard')">Continuar</button><br>
+    <button class="footer-btn" onclick="mostrar('inicio')">← Volver</button>
 </section>
 
 <!-- 📌 Dashboard / Emergencias -->
@@ -84,19 +137,19 @@
     <h1>Panel Familiar</h1>
 
     <div class="tarjeta">
-        <h3>Activar Alerta</h3>
-        <p>Enviar notificación a todas las casas vinculadas</p>
-        <button>🔔 Enviar Alerta</button>
+        <h3><i class="fa-solid fa-bell"></i> Activar Alerta</h3>
+        <p>Enviar notificación inmediata a todos los miembros</p>
+        <button class="btn-alerta"><i class="fa-solid fa-triangle-exclamation"></i> Enviar Alerta</button>
     </div>
 
     <div class="tarjeta">
-        <h3>Viviendas Conectadas</h3>
-        <p>◼ Casa 1 — Conectada<br>
-           ◼ Casa 2 — Conectada<br>
-           ◼ Casa 3 — Conectada</p>
+        <h3><i class="fa-solid fa-house-chimney"></i> Viviendas Conectadas</h3>
+        <p>🏠 Casa 1 — Conectada ✅<br>
+           🏠 Casa 2 — Conectada ✅<br>
+           🏠 Casa 3 — Desconectada ⚠️</p>
     </div>
 
-    <button onclick="mostrar('inicio')">Cerrar sesión</button>
+    <button class="footer-btn" onclick="mostrar('inicio')">Cerrar Sesión</button>
 </section>
 
 <script>
