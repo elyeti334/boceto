@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FamHogar - Boceto UI</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- Login -->
+    <main id="screen-login" class="screen active">
+      <div class="card center">
+        <h1>FamHogar</h1>
+        <p class="subtitle">Organiza tu economía familiar</p>
+
+        <label>Email</label>
+        <input id="login-email" type="email" placeholder="tu@ejemplo.com" />
+
+        <label>Contraseña</label>
+        <input id="login-pass" type="password" placeholder="••••••••" />
+
+        <button class="btn primary" onclick="go('dashboard')">Iniciar sesión</button>
+
+        <p class="muted">¿No tenés cuenta? <a href="#" onclick="alert('Registro no implementado en el boceto')">Crear cuenta</a></p>
+      </div>
+    </main>
+
+    <!-- Dashboard -->
+    <main id="screen-dashboard" class="screen">
+      <header class="bar">
+        <h2>Dashboard</h2>
+        <button class="btn small" onclick="go('login')">Salir</button>
+      </header>
+
+      <section class="content">
+        <div class="card balance">
+          <div class="balance-title">Saldo actual del mes</div>
+          <div class="balance-amount">$125.000</div>
+          <div class="small">Ingresos vs Gastos (gráfico simplificado)</div>
+          <div class="fake-chart">[ gráfico ]</div>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" onclick="go('add')">➕ Agregar operación</button>
+        </div>
+
+        <div class="categories card">
+          <h3>Categorías más usadas</h3>
+          <div class="chips">
+            <span class="chip">🛒 Alimentos</span>
+            <span class="chip">🔌 Servicios</span>
+            <span class="chip">🚍 Transporte</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Últimos movimientos</h3>
+          <ul class="list">
+            <li><span class="date">01/10</span> 🛒 Alimentos <span class="amount negative">-$3.250</span></li>
+            <li><span class="date">02/10</span> 💡 Servicios <span class="amount negative">-$1.200</span></li>
+            <li><span class="date">03/10</span> 🎓 Educación <span class="amount negative">-$5.000</span></li>
+          </ul>
+          <div class="right"><button class="btn" onclick="go('list')">Ver todos</button></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Add operation -->
+    <main id="screen-add" class="screen">
+      <header class="bar">
+        <h2>Agregar operación</h2>
+        <button class="btn small" onclick="go('dashboard')">Cancelar</button>
+      </header>
+
+      <section class="content">
+        <div class="card form">
+          <label>Tipo</label>
+          <div class="segmented">
+            <button class="seg active">Ingreso</button>
+            <button class="seg">Gasto</button>
+          </div>
+
+          <label>Monto</label>
+          <input type="number" placeholder="0.00" />
+
+          <label>Categoría</label>
+          <select>
+            <option>Alimentos</option>
+            <option>Servicios</option>
+            <option>Transporte</option>
+            <option>Educación</option>
+          </select>
+
+          <label>Fecha</label>
+          <input type="date" />
+
+          <label>Descripción (opcional)</label>
+          <input type="text" placeholder="Ej: Supermercado" />
+
+          <button class="btn primary" onclick="alert('Guardar no implementado en el boceto')">Guardar</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- List -->
+    <main id="screen-list" class="screen">
+      <header class="bar">
+        <h2>Lista de Movimientos</h2>
+        <button class="btn small" onclick="go('dashboard')">Volver</button>
+      </header>
+
+      <section class="content">
+        <div class="card">
+          <div class="filters">
+            <select><option>Mes: Octubre</option></select>
+            <select><option>Tipo: Todos</option></select>
+            <select><option>Categoría: Todas</option></select>
+          </div>
+
+          <ul class="movements">
+            <li><span class="date">01/10</span> 🛒 Alimentos <span class="amount negative">-$3.250</span></li>
+            <li><span class="date">02/10</span> 💡 Servicios <span class="amount negative">-$1.200</span></li>
+            <li><span class="date">03/10</span> 💰 Sueldo <span class="amount positive">+$80.000</span></li>
+            <li><span class="date">05/10</span> 🎓 Educación <span class="amount negative">-$5.000</span></li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
