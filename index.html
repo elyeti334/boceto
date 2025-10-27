@@ -1,527 +1,213 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>FamHogar — Control familiar de dinero</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FamHogar - Control Familiar</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-  :root{
-    --bg:#f6f8fb;
-    --card:#ffffff;
-    --accent:#0b63d6;
-    --success:#1fa63a;
-    --danger:#d64545;
-    --muted:#6b7280;
-    --radius:12px;
-    --maxw:920px;
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    background:var(--bg);
-    color:#0f172a;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-  }
+    :root {
+        --azul: #004a87;
+        --verde: #2ecc71;
+        --rojo: #e74c3c;
+        --gris: #f4f4f4;
+        --blanco: #ffffff;
+    }
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: var(--gris);
+        text-align: center;
+    }
+    header img {
+        width: 120px;
+        margin-top: 30px;
+    }
+    .pantalla { display: none; padding: 30px 20px; }
+    .activa { display: block; }
 
-  .container{
-    max-width:var(--maxw);
-    margin:28px auto;
-    padding:18px;
-  }
+    h1 { color: var(--azul); }
 
-  header{
-    display:flex;
-    align-items:center;
-    gap:14px;
-    margin-bottom:18px;
-  }
-  .logo {
-    width:56px; height:56px; border-radius:10px; background:linear-gradient(135deg,#0b63d6,#3aa0ff);
-    display:flex;align-items:center;justify-content:center;color:white;font-weight:700;
-    box-shadow:0 6px 20px rgba(11,99,214,0.18);
-  }
-  h1{font-size:20px;margin:0}
-  p.lead{margin:0;color:var(--muted);font-size:14px}
+    button {
+        width: 80%;
+        max-width: 320px;
+        padding: 14px;
+        border: none;
+        border-radius: 10px;
+        margin: 10px auto;
+        font-size: 17px;
+        background: var(--azul);
+        color: white;
+        cursor: pointer;
+        display: block;
+    }
+    button:active { transform: scale(.97); }
 
-  .layout{
-    display:grid;
-    grid-template-columns: 1fr 380px;
-    gap:18px;
-    margin-top:18px;
-  }
+    input, select {
+        width: 80%;
+        max-width: 350px;
+        padding: 12px;
+        margin: 8px 0;
+        border-radius: 8px;
+        border: 2px solid #ccc;
+        font-size: 16px;
+    }
 
-  /* Left column (main) */
-  .main-card{
-    background:var(--card);
-    border-radius:var(--radius);
-    padding:16px;
-    box-shadow:0 6px 18px rgba(8,10,30,0.06);
-  }
+    .tarjeta {
+        background: var(--blanco);
+        padding: 20px;
+        margin: 20px auto;
+        width: 85%;
+        border-radius: 14px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+        text-align: left;
+    }
 
-  .row{
-    display:flex;
-    gap:12px;
-    align-items:center;
-  }
+    .saldo {
+        font-size: 28px;
+        font-weight: bold;
+    }
+    .positivo { color: var(--verde); }
+    .negativo { color: var(--rojo); }
 
-  /* Balance */
-  .balance {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:12px;
-    padding:10px 12px;
-    border-radius:10px;
-    background:linear-gradient(90deg, rgba(11,99,214,0.08), rgba(11,99,214,0.02));
-  }
-  .balance .lbl{font-size:13px;color:var(--muted)}
-  .balance .val{font-size:28px;font-weight:700}
-
-  /* summary cards */
-  .summaries{
-    display:flex;
-    gap:12px;
-    margin-top:12px;
-  }
-  .sum-card{
-    background:var(--card);
-    flex:1;
-    padding:12px;border-radius:10px;
-    box-shadow:0 6px 14px rgba(10,10,30,0.04);
-  }
-  .sum-card .title{font-size:13px;color:var(--muted)}
-  .sum-card .amount{font-weight:700;margin-top:6px;font-size:18px}
-
-  /* lists */
-  .section-title{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
-  ul.movements{list-style:none;padding:0;margin:10px 0 0}
-  ul.movements li{
-    display:flex;
-    justify-content:space-between;
-    gap:12px;
-    padding:10px 8px;
-    border-radius:8px;
-    align-items:center;
-    border:1px solid rgba(15,23,42,0.04);
-    margin-bottom:8px;
-  }
-  .left{display:flex;gap:10px;align-items:center}
-  .tag{font-size:13px;color:var(--muted)}
-  .desc{font-weight:600}
-  .date{font-size:13px;color:var(--muted)}
-  .amt{font-weight:700}
-
-  .amt.positive{color:var(--success)}
-  .amt.negative{color:var(--danger)}
-
-  /* right column (form) */
-  .aside-card{
-    position:sticky;
-    top:20px;
-    background:var(--card);
-    border-radius:var(--radius);
-    padding:16px;
-    box-shadow:0 6px 18px rgba(8,10,30,0.06);
-    height:max-content;
-  }
-
-  label{display:block;font-size:13px;color:var(--muted);margin-top:10px}
-  input[type="text"], input[type="number"], input[type="date"], select{
-    width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;margin-top:6px;font-size:15px;
-  }
-  .btn{
-    display:inline-block;padding:10px 14px;border-radius:10px;border:0;background:var(--accent);color:#fff;
-    cursor:pointer;margin-top:12px;width:100%;font-weight:600;
-  }
-  .btn.secondary{background:#f3f4f6;color:#111;font-weight:600}
-  .small{font-size:13px;color:var(--muted)}
-
-  .actions{display:flex;gap:8px;margin-top:8px}
-  .icon-btn{border:0;background:transparent;cursor:pointer;padding:6px;border-radius:8px}
-  .icon-btn:hover{background:#f3f4f6}
-
-  .muted{color:var(--muted);font-size:13px}
-
-  footer{margin-top:20px;text-align:center;color:var(--muted);font-size:13px}
-
-  /* responsive */
-  @media (max-width:900px){
-    .layout{grid-template-columns:1fr; padding-bottom:60px}
-    .aside-card{position:static}
-  }
+    .lista h3 { margin-bottom: 8px; color: var(--azul); }
+    ul { list-style: none; padding: 0; margin: 0; text-align: left; }
+    li { padding: 5px 0; border-bottom: 1px solid #ddd; }
 </style>
 </head>
+
 <body>
-  <div class="container">
-    <header>
-      <div class="logo">FH</div>
-      <div>
-        <h1>FamHogar</h1>
-        <p class="lead">Control familiar de ingresos y gastos — prototipo</p>
-      </div>
-    </header>
 
-    <div class="layout">
-      <!-- LEFT: main -->
-      <div class="main-card" aria-live="polite">
-        <div class="balance" role="status" aria-atomic="true">
-          <div>
-            <div class="lbl">Balance actual</div>
-            <div id="balance" class="val">-</div>
-          </div>
-          <div style="text-align:right">
-            <div class="lbl">Periodo</div>
-            <div class="muted" id="periodLabel">Todo</div>
-          </div>
-        </div>
+<!-- ✅ MENÚ DE INICIO PRINCIPAL -->
+<section id="home" class="pantalla activa">
+    <header><img src="https://cdn-icons-png.flaticon.com/512/651/651191.png"></header>
+    <h1>FamHogar</h1>
+    <p>Tu economía familiar, organizada y clara.</p>
 
-        <div class="summaries">
-          <div class="sum-card">
-            <div class="title">Ingresos</div>
-            <div id="totalIncome" class="amount">-</div>
-          </div>
-          <div class="sum-card">
-            <div class="title">Gastos</div>
-            <div id="totalExpense" class="amount">-</div>
-          </div>
-        </div>
+    <button onclick="mostrar('dashboard')"><i class="fa-solid fa-person-walking-dashed-line-arrow-right"></i> Entrar sin cuenta</button>
+    <button onclick="mostrar('login')"><i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión</button>
+    <button onclick="mostrar('registro')"><i class="fa-solid fa-user-plus"></i> Registrarse</button>
+</section>
 
-        <!-- Ingresos Section -->
-        <div class="section-title">
-          <h3 style="margin:0">Ingresos</h3>
-          <button class="btn secondary" onclick="filterType('income')">Ver solo ingresos</button>
-        </div>
-        <ul id="listIncome" class="movements" aria-label="Lista de ingresos"></ul>
+<!-- ✅ LOGIN -->
+<section id="login" class="pantalla">
+    <h1>Ingresar</h1>
+    <input type="email" placeholder="Correo electrónico">
+    <input type="password" placeholder="Contraseña">
+    <button onclick="mostrar('dashboard')">Acceder</button>
+    <button style="background:#777" onclick="mostrar('home')">← Volver</button>
+</section>
 
-        <!-- Gastos Section -->
-        <div class="section-title">
-          <h3 style="margin:0">Gastos</h3>
-          <button class="btn secondary" onclick="filterType('expense')">Ver solo gastos</button>
-        </div>
-        <ul id="listExpense" class="movements" aria-label="Lista de gastos"></ul>
+<!-- ✅ REGISTRO -->
+<section id="registro" class="pantalla">
+    <h1>Registro</h1>
+    <input type="text" placeholder="Nombre completo">
+    <input type="email" placeholder="Correo electrónico">
+    <input type="password" placeholder="Crear contraseña">
+    <button onclick="mostrar('dashboard')">Crear cuenta</button>
+    <button style="background:#777" onclick="mostrar('home')">← Volver</button>
+</section>
 
-        <div style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
-          <button class="btn secondary" onclick="clearFilters()">Ver todo</button>
-        </div>
-      </div>
+<!-- ✅ DASHBOARD CON BALANCE E HISTORIAL -->
+<section id="dashboard" class="pantalla">
+    <h1>Resumen Económico</h1>
 
-      <!-- RIGHT: form -->
-      <aside class="aside-card" aria-label="Agregar movimiento">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <strong>Nuevo movimiento</strong>
-          <div class="small muted">Datos se guardan en tu navegador</div>
-        </div>
-
-        <label for="type">Tipo</label>
-        <select id="type">
-          <option value="income">Ingreso</option>
-          <option value="expense">Gasto</option>
-        </select>
-
-        <label for="category">Categoría</label>
-        <select id="category">
-          <option>-- Seleccionar --</option>
-          <option>Sueldos</option>
-          <option>Ventas</option>
-          <option>Otros ingresos</option>
-          <option>Alimentos</option>
-          <option>Servicios</option>
-          <option>Transporte</option>
-          <option>Educación</option>
-          <option>Salud</option>
-        </select>
-
-        <label for="description">Descripción</label>
-        <input id="description" type="text" placeholder="Ej: Sueldo Julio / Supermercado">
-
-        <label for="amount">Monto (sin símbolos)</label>
-        <input id="amount" type="number" step="0.01" placeholder="Ej: 120000">
-
-        <label for="date">Fecha</label>
-        <input id="date" type="date">
-
-        <div class="actions">
-          <button id="saveBtn" class="btn">Guardar</button>
-          <button id="resetBtn" class="btn secondary" style="width:120px">Limpiar</button>
-        </div>
-
-        <hr style="margin-top:14px;border:none;border-top:1px solid #f0f2f6">
-
-        <div style="display:flex;gap:8px;flex-direction:column">
-          <button class="btn secondary" onclick="exportJSON()">Exportar JSON</button>
-          <button class="btn secondary" onclick="importJSON()">Importar JSON</button>
-          <button class="btn secondary" onclick="clearAll()">Borrar todo</button>
-        </div>
-      </aside>
+    <div class="tarjeta">
+        <h3><i class="fa-solid fa-wallet"></i> Balance del Hogar</h3>
+        <p id="balance" class="saldo">$0</p>
     </div>
 
-    <footer>
-      Prototipo FamHogar — datos locales (localStorage) — listo para GitHub Pages
-    </footer>
-  </div>
+    <div class="tarjeta lista">
+        <h3>Ingresos</h3>
+        <ul id="listaIngresos"></ul>
+    </div>
+
+    <div class="tarjeta lista">
+        <h3>Gastos</h3>
+        <ul id="listaGastos"></ul>
+    </div>
+
+    <button onclick="mostrar('movimiento')"><i class="fa-solid fa-plus"></i> Agregar Movimiento</button>
+    <button style="background:#777" onclick="mostrar('home')">Cerrar Sesión</button>
+</section>
+
+<!-- ✅ NUEVO MOVIMIENTO -->
+<section id="movimiento" class="pantalla">
+    <h1>Nuevo Movimiento</h1>
+
+    <select id="tipoMovimiento">
+        <option value="ingreso">Ingreso</option>
+        <option value="gasto">Gasto</option>
+    </select>
+
+    <input id="descripcion" type="text" placeholder="Descripción">
+    <input id="monto" type="number" placeholder="Monto">
+
+    <button onclick="guardarMovimiento()">Guardar</button>
+    <button style="background:#777" onclick="mostrar('dashboard')">← Cancelar</button>
+</section>
 
 <script>
-/*
-  FamHogar — prototipo de control financiero
-  - Movimientos guardados en localStorage (clave "famhogar_movs")
-  - Estructura movimiento: { id, type: 'income'|'expense', category, description, amount (number), date (ISO) }
-*/
+let movimientos = JSON.parse(localStorage.getItem("movimientos")) || [];
 
-const STORAGE_KEY = 'famhogar_movs_v1';
-
-let state = {
-  movs: [],
-  filter: 'all' // 'all' | 'income' | 'expense'
-};
-
-// Utilities
-function $(id){ return document.getElementById(id); }
-function uid(){ return 'm_' + Math.random().toString(36).slice(2,10); }
-function fmtMoney(n){
-  if(isNaN(n)) return '-';
-  // ensure two-decimal formatting, digit by digit safe:
-  const sign = n < 0 ? '-' : '';
-  n = Math.abs(Number(n));
-  const parts = Math.floor(n).toString().split('').reverse().join('').replace(/(\d{3})(?=\d)/g,'$1.');
-  const cents = Math.round((n - Math.floor(n)) * 100).toString().padStart(2,'0');
-  return `${sign}$ ${parts.split('').reverse().join('')} ,${cents}`;
-}
-function saveState(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state.movs));
-}
-function loadState(){
-  const raw = localStorage.getItem(STORAGE_KEY);
-  state.movs = raw ? JSON.parse(raw) : [];
+function mostrar(pantalla) {
+    document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+    document.getElementById(pantalla).classList.add('activa');
 }
 
-// Renderers
-function render(){
-  // totals
-  const incomes = state.movs.filter(m => m.type === 'income');
-  const expenses = state.movs.filter(m => m.type === 'expense');
-  const totalIncome = incomes.reduce((s,m)=> s + Number(m.amount), 0);
-  const totalExpense = expenses.reduce((s,m)=> s + Number(m.amount), 0);
-  const balance = totalIncome - totalExpense;
+function actualizarDashboard() {
+    let ingresosLista = document.getElementById("listaIngresos");
+    let gastosLista = document.getElementById("listaGastos");
+    let balanceUI = document.getElementById("balance");
 
-  $('totalIncome').textContent = fmtMoney(totalIncome);
-  $('totalExpense').textContent = fmtMoney(totalExpense);
+    ingresosLista.innerHTML = "";
+    gastosLista.innerHTML = "";
 
-  const balEl = $('balance');
-  balEl.textContent = fmtMoney(balance);
-  balEl.classList.remove('positive','negative');
-  if(balance >= 0){
-    balEl.style.color = getComputedStyle(document.documentElement).getPropertyValue('--success');
-  } else {
-    balEl.style.color = getComputedStyle(document.documentElement).getPropertyValue('--danger');
-  }
+    let balance = 0;
 
-  // lists
-  const listIncome = $('listIncome');
-  const listExpense = $('listExpense');
-  listIncome.innerHTML = '';
-  listExpense.innerHTML = '';
+    movimientos.forEach(m => {
+        let li = document.createElement("li");
+        li.textContent = `${m.descripcion} $${m.monto}`;
 
-  // filtered set
-  const filtered = state.filter === 'all' ? state.movs : state.movs.filter(m => m.type === state.filter);
-
-  // separate and sort by date desc
-  const inc = filtered.filter(m=>m.type==='income').sort((a,b)=> b.date.localeCompare(a.date));
-  const exp = filtered.filter(m=>m.type==='expense').sort((a,b)=> b.date.localeCompare(a.date));
-
-  function rowHTML(m){
-    const d = new Date(m.date);
-    const dstr = isNaN(d) ? m.date : d.toLocaleDateString();
-    const amtClass = m.type === 'income' ? 'amt positive' : 'amt negative';
-    return `
-      <li id="${m.id}">
-        <div class="left">
-          <div style="width:8px;height:36px;border-radius:6px;background:${m.type==='income'?getComputedStyle(document.documentElement).getPropertyValue('--success'):getComputedStyle(document.documentElement).getPropertyValue('--danger')};"></div>
-          <div>
-            <div class="desc">${escapeHtml(m.description || m.category)}</div>
-            <div class="tag">${escapeHtml(m.category)} · <span class="date">${dstr}</span></div>
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end">
-          <div class="${amtClass}">${fmtMoney(Number(m.amount))}</div>
-          <div style="margin-top:6px">
-            <button class="icon-btn" title="Editar" onclick="editMove('${m.id}')">✏️</button>
-            <button class="icon-btn" title="Eliminar" onclick="deleteMove('${m.id}')">🗑️</button>
-          </div>
-        </div>
-      </li>
-    `;
-  }
-
-  listIncome.innerHTML = inc.map(m => rowHTML(m)).join('') || '<li class="muted" style="padding:8px">No hay ingresos registrados.</li>';
-  listExpense.innerHTML = exp.map(m => rowHTML(m)).join('') || '<li class="muted" style="padding:8px">No hay gastos registrados.</li>';
-}
-
-// basic escape to avoid simple injection when rendering
-function escapeHtml(s){
-  if(!s) return '';
-  return String(s).replace(/[&<>"']/g, function(ch){
-    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[ch];
-  });
-}
-
-// Actions
-function addMove(data){
-  state.movs.push(data);
-  saveState();
-  render();
-}
-
-function deleteMove(id){
-  if(!confirm('Eliminar movimiento?')) return;
-  state.movs = state.movs.filter(m => m.id !== id);
-  saveState();
-  render();
-}
-
-let editingId = null;
-function editMove(id){
-  const m = state.movs.find(x=>x.id===id);
-  if(!m) return;
-  // populate form
-  editingId = id;
-  $('type').value = m.type;
-  $('category').value = m.category;
-  $('description').value = m.description || '';
-  $('amount').value = m.amount;
-  $('date').value = m.date || '';
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-// form handlers
-$('saveBtn').addEventListener('click', ()=>{
-  const type = $('type').value;
-  const category = $('category').value;
-  const description = $('description').value.trim();
-  const amount = Number($('amount').value);
-  const date = $('date').value || new Date().toISOString().slice(0,10);
-
-  // validations
-  if(!category || category === '-- Seleccionar --'){
-    alert('Seleccioná una categoría');
-    return;
-  }
-  if(!amount || isNaN(amount) || amount <= 0){
-    alert('Ingresá un monto válido (> 0)');
-    return;
-  }
-
-  if(editingId){
-    // update
-    const idx = state.movs.findIndex(m=>m.id===editingId);
-    if(idx >= 0){
-      state.movs[idx] = { id: editingId, type, category, description, amount: Number(amount), date };
-      editingId = null;
-      saveState();
-      render();
-      // clear form
-      clearForm();
-      return;
-    }
-  }
-
-  const newMove = {
-    id: uid(),
-    type,
-    category,
-    description,
-    amount: Number(amount),
-    date
-  };
-  addMove(newMove);
-  clearForm();
-});
-
-$('resetBtn').addEventListener('click', clearForm);
-
-function clearForm(){
-  editingId = null;
-  $('type').value = 'income';
-  $('category').selectedIndex = 0;
-  $('description').value = '';
-  $('amount').value = '';
-  $('date').value = '';
-}
-
-// filters
-function filterType(t){
-  state.filter = t;
-  $('periodLabel').textContent = (t==='income'? 'Sólo ingresos' : 'Sólo gastos');
-  render();
-}
-function clearFilters(){
-  state.filter = 'all';
-  $('periodLabel').textContent = 'Todo';
-  render();
-}
-
-// export/import JSON
-function exportJSON(){
-  const data = JSON.stringify(state.movs, null, 2);
-  const blob = new Blob([data], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'famhogar_movimientos.json';
-  document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
-}
-
-function importJSON(){
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'application/json';
-  input.onchange = e =>{
-    const file = e.target.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try{
-        const imported = JSON.parse(reader.result);
-        if(!Array.isArray(imported)) throw new Error('JSON inválido');
-        // basic validation
-        for(const it of imported){
-          if(!it.id) it.id = uid();
-          if(!it.type || (it.type !== 'income' && it.type !== 'expense')) it.type = 'expense';
-          it.amount = Number(it.amount) || 0;
-          it.date = it.date || new Date().toISOString().slice(0,10);
-        }
-        if(confirm('¿Agregar los movimientos importados al existente? A = OK (agregar); Cancel = Reemplazar todo')){
-          state.movs = state.movs.concat(imported);
+        if (m.tipo === "ingreso") {
+            ingresosLista.appendChild(li);
+            balance += m.monto;
         } else {
-          state.movs = imported;
+            gastosLista.appendChild(li);
+            balance -= m.monto;
         }
-        saveState();
-        render();
-        alert('Importación finalizada');
-      }catch(err){
-        alert('Error al importar JSON: ' + err.message);
-      }
+    });
+
+    balanceUI.textContent = "$" + balance;
+
+    if (balance >= 0) {
+        balanceUI.className = "saldo positivo";
+    } else {
+        balanceUI.className = "saldo negativo";
     }
-    reader.readAsText(file);
-  };
-  input.click();
 }
 
-// clear all data
-function clearAll(){
-  if(!confirm('Borrar TODOS los movimientos? Esta acción no se puede deshacer.')) return;
-  state.movs = [];
-  saveState();
-  render();
+function guardarMovimiento() {
+    let tipo = document.getElementById("tipoMovimiento").value;
+    let descripcion = document.getElementById("descripcion").value;
+    let monto = parseFloat(document.getElementById("monto").value);
+
+    if (!descripcion || !monto) return alert("Complete todos los campos");
+
+    movimientos.push({ tipo, descripcion, monto });
+
+    localStorage.setItem("movimientos", JSON.stringify(movimientos));
+
+    document.getElementById("descripcion").value = "";
+    document.getElementById("monto").value = "";
+
+    mostrar("dashboard");
+    actualizarDashboard();
 }
 
-// init
-(function init(){
-  loadState();
-  render();
-})();
+actualizarDashboard();
 </script>
+
 </body>
 </html>
